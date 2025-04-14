@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/api_service.dart';
 import '../widgets/user_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -14,6 +14,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _searchController = TextEditingController();
   List<User> _users = [];
   bool _isLoading = false;
+  String? _searchError;
 
   @override
   void dispose() {
@@ -21,8 +22,25 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  void _searchUsers(String query) async {
-    setState(() => _isLoading = true);
+  void _validateAndSearch(String query) async {
+    if (query.trim().isEmpty) {
+      setState(() {
+        _searchError = 'Search term is required';
+      });
+      return;
+    }
+    if (!RegExp(r'^[a-zA-Z0-9_ ]{1,50}$').hasMatch(query)) {
+      setState(() {
+        _searchError =
+            'Search can only contain letters, numbers, underscores, and spaces';
+      });
+      return;
+    }
+
+    setState(() {
+      _searchError = null;
+      _isLoading = true;
+    });
     try {
       final apiService = ApiService();
       final token = await _getToken();
@@ -38,7 +56,32 @@ class _SearchScreenState extends State<SearchScreen> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ).showSnackBar(SnackBar(content: Text('Search failed: $e')));
+    }
+  }
+
+  void _toggleFollow(User user, int index) async {
+    try {
+      final apiService = ApiService();
+      final token = await _getToken();
+      final response = await apiService.post('/follow/${user.id}', {}, token);
+      final status = jsonDecode(response.body)['status'] ?? '';
+      setState(() {
+        _users[index].isFollowed = status == 'followed';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            status == 'followed'
+                ? 'Followed ${user.username}'
+                : 'Unfollowed ${user.username}',
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to toggle follow: $e')));
     }
   }
 
@@ -50,7 +93,10 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Connect')),
+      appBar: AppBar(
+        title: Text('Connect'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: Column(
         children: [
           Padding(
@@ -61,10 +107,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 hintText: 'Search Username',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                errorText: _searchError,
               ),
-              onSubmitted: _searchUsers,
+              onSubmitted: _validateAndSearch,
+              onChanged:
+                  (value) => setState(() {
+                    _searchError = null;
+                  }),
             ),
           ),
           Expanded(
@@ -80,20 +131,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         return UserCard(
                           user: user,
                           isFollowed: user.isFollowed ?? false,
-                          onFollowToggle: () async {
-                            final apiService = ApiService();
-                            final token = await _getToken();
-                            final response = await apiService.post(
-                              '/follow/${user.id}',
-                              {},
-                              token,
-                            );
-                            setState(() {
-                              user.isFollowed =
-                                  jsonDecode(response.body)['status'] ==
-                                  'followed';
-                            });
-                          },
+                          onFollowToggle: () => _toggleFollow(user, index),
                         );
                       },
                     ),

@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/post.dart';
 import '../models/like.dart';
 import '../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -69,10 +69,21 @@ class PostProvider with ChangeNotifier {
     try {
       final token = await _getToken();
       final response = await _apiService.post('/like/$postId', {}, token);
-      final status = jsonDecode(response.body)['status'];
-      final post = _posts.firstWhere((p) => p.id == postId);
-      post.likeCount += status == 'liked' ? 1 : -1;
-      post.userLiked = status == 'liked';
+      final status = jsonDecode(response.body)['status'] ?? '';
+      final postIndex = _posts.indexWhere((p) => p.id == postId);
+      if (postIndex != -1) {
+        final post = _posts[postIndex];
+        _posts[postIndex] = Post(
+          id: post.id,
+          userId: post.userId,
+          content: post.content,
+          imageUrl: post.imageUrl,
+          createdAt: post.createdAt,
+          user: post.user,
+          likeCount: post.likeCount + (status == 'liked' ? 1 : -1),
+          userLiked: status == 'liked',
+        );
+      }
       _error = null;
       notifyListeners();
       return true;
@@ -91,7 +102,7 @@ class PostProvider with ChangeNotifier {
           .map((data) => Like.fromJson(data))
           .toList();
     } catch (e) {
-      throw e.toString();
+      return [];
     }
   }
 

@@ -13,10 +13,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<PostProvider>(context, listen: false).fetchPosts();
+    _fetchPosts();
+  }
+
+  void _fetchPosts() async {
+    await Provider.of<PostProvider>(context, listen: false).fetchPosts();
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -85,7 +92,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body:
-          postProvider.posts.isEmpty
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : postProvider.posts.isEmpty
               ? Center(child: Text('No posts yet. Follow someone!'))
               : ListView.builder(
                 itemCount: postProvider.posts.length,

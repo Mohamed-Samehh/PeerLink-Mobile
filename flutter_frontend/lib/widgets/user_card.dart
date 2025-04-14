@@ -16,34 +16,54 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
             CircleAvatar(
               radius: 50,
+              backgroundColor: Colors.grey[200],
               backgroundImage:
-                  user.profilePictureUrl != null
+                  user.profilePictureUrl != null &&
+                          user.profilePictureUrl!.isNotEmpty
                       ? CachedNetworkImageProvider(user.profilePictureUrl!)
-                      : AssetImage('assets/images/placeholder.jpg'),
+                      : null,
+              child:
+                  user.profilePictureUrl == null ||
+                          user.profilePictureUrl!.isEmpty
+                      ? Icon(Icons.person, size: 50, color: Colors.grey[600])
+                      : null,
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 12),
             Text(
               user.name,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-            Text('@${user.username}'),
-            SizedBox(height: 8),
+            Text(
+              '@${user.username}',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: onFollowToggle,
-              child: Text(isFollowed ? 'Unfollow' : 'Follow'),
               style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    isFollowed
+                        ? Colors.grey[300]
+                        : Theme.of(context).primaryColor,
+                foregroundColor: isFollowed ? Colors.black87 : Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
+              child: Text(isFollowed ? 'Unfollow' : 'Follow'),
             ),
           ],
         ),

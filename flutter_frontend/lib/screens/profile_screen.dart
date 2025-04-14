@@ -11,11 +11,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<AuthProvider>(context, listen: false).fetchProfile();
-    // Fetch user posts
+    _fetchProfile();
+  }
+
+  void _fetchProfile() async {
+    await Provider.of<AuthProvider>(context, listen: false).fetchProfile();
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -25,8 +31,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Profile')),
       body:
-          user == null
+          _isLoading
               ? Center(child: CircularProgressIndicator())
+              : user == null
+              ? Center(child: Text('Unable to load profile'))
               : SingleChildScrollView(
                 child: Column(
                   children: [
@@ -37,7 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ? CachedNetworkImageProvider(
                                 user.profilePictureUrl!,
                               )
-                              : AssetImage('assets/images/placeholder.jpg'),
+                              : AssetImage('assets/images/placeholder.jpg')
+                                  as ImageProvider,
                     ),
                     SizedBox(height: 16),
                     Text(
@@ -60,7 +69,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                     SizedBox(height: 16),
-                    // List of user posts
                     Consumer<PostProvider>(
                       builder: (context, postProvider, child) {
                         final posts =

@@ -7,7 +7,10 @@ class ApiService {
   Future<http.Response> get(String endpoint, String? token) async {
     final response = await http.get(
       Uri.parse('$baseUrl$endpoint'),
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
     );
     return _handleResponse(response);
   }
@@ -20,7 +23,7 @@ class ApiService {
     final response = await http.post(
       Uri.parse('$baseUrl$endpoint'),
       headers: {
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
@@ -35,11 +38,12 @@ class ApiService {
     File? file,
     String? token,
   ) async {
-    var request =
-        http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'))
-          ..headers['Authorization'] = 'Bearer $token'
-          ..headers['Accept'] = 'application/json'
-          ..fields.addAll(fields);
+    var request = http.MultipartRequest('POST', Uri.parse('$baseUrl$endpoint'))
+      ..headers['Accept'] = 'application/json';
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.fields.addAll(fields);
 
     if (file != null) {
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
@@ -58,7 +62,7 @@ class ApiService {
     final response = await http.put(
       Uri.parse('$baseUrl$endpoint'),
       headers: {
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
@@ -73,11 +77,12 @@ class ApiService {
     File? file,
     String? token,
   ) async {
-    var request =
-        http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'))
-          ..headers['Authorization'] = 'Bearer $token'
-          ..headers['Accept'] = 'application/json'
-          ..fields.addAll(fields);
+    var request = http.MultipartRequest('PUT', Uri.parse('$baseUrl$endpoint'))
+      ..headers['Accept'] = 'application/json';
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.fields.addAll(fields);
 
     if (file != null) {
       request.files.add(await http.MultipartFile.fromPath('file', file.path));
@@ -91,7 +96,10 @@ class ApiService {
   Future<http.Response> delete(String endpoint, String? token) async {
     final response = await http.delete(
       Uri.parse('$baseUrl$endpoint'),
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
     );
     return _handleResponse(response);
   }

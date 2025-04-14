@@ -38,7 +38,7 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e.toString());
       notifyListeners();
       return false;
     }
@@ -51,7 +51,7 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e.toString());
       notifyListeners();
       return false;
     }
@@ -70,7 +70,7 @@ class AuthProvider with ChangeNotifier {
       _error = null;
       notifyListeners();
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e.toString());
       notifyListeners();
     }
   }
@@ -100,7 +100,7 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e.toString());
       notifyListeners();
       return false;
     }
@@ -113,9 +113,26 @@ class AuthProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _error = e.toString();
+      _error = _parseError(e.toString());
       notifyListeners();
       return false;
     }
+  }
+
+  String _parseError(String error) {
+    if (error.contains('401') || error.contains('Invalid credentials')) {
+      return 'Invalid username or password';
+    } else if (error.contains('422')) {
+      if (error.contains('username')) {
+        return 'Username is already taken';
+      } else if (error.contains('email')) {
+        return 'Email is already registered';
+      } else {
+        return 'Invalid input data';
+      }
+    } else if (error.contains('network')) {
+      return 'Network error, please try again';
+    }
+    return 'An error occurred: $error';
   }
 }

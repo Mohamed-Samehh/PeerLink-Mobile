@@ -9,9 +9,9 @@ class Like {
 
   factory Like.fromJson(Map<String, dynamic> json) {
     return Like(
-      userId: json['user_id'],
-      postId: json['post_id'],
-      user: User.fromJson(json['user']),
+      userId: json['user_id'] ?? 0,
+      postId: json['post_id'] ?? 0,
+      user: User.fromJson(json['user'] ?? {}),
     );
   }
 }

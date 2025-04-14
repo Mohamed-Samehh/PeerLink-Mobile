@@ -27,16 +27,16 @@ class AuthService {
         'password': password,
         'dob': dob,
         'gender': gender,
-        if (phoneNum != null) 'phone_num': phoneNum,
-        if (bio != null) 'bio': bio,
+        if (phoneNum != null && phoneNum.isNotEmpty) 'phone_num': phoneNum,
+        if (bio != null && bio.isNotEmpty) 'bio': bio,
       },
       profilePicture,
       null,
     );
 
     final data = jsonDecode(response.body);
-    final user = User.fromJson(data['user']);
-    await _saveToken(data['token']);
+    final user = User.fromJson(data['user'] ?? {});
+    await _saveToken(data['token'] ?? '');
     return user;
   }
 
@@ -47,21 +47,23 @@ class AuthService {
     }, null);
 
     final data = jsonDecode(response.body);
-    final user = User.fromJson(data['user']);
-    await _saveToken(data['token']);
+    final user = User.fromJson(data['user'] ?? {});
+    await _saveToken(data['token'] ?? '');
     return user;
   }
 
   Future<void> logout() async {
     final token = await _getToken();
-    await _apiService.post('/logout', {}, token);
+    if (token != null) {
+      await _apiService.post('/logout', {}, token);
+    }
     await _clearToken();
   }
 
   Future<User> getProfile() async {
     final token = await _getToken();
     final response = await _apiService.get('/profile', token);
-    return User.fromJson(jsonDecode(response.body));
+    return User.fromJson(jsonDecode(response.body) ?? {});
   }
 
   Future<User> updateProfile({
@@ -81,16 +83,16 @@ class AuthService {
         'name': name,
         'username': username,
         'email': email,
-        if (phoneNum != null) 'phone_num': phoneNum,
+        if (phoneNum != null && phoneNum.isNotEmpty) 'phone_num': phoneNum,
         if (dob != null) 'dob': dob,
         if (gender != null) 'gender': gender,
-        if (bio != null) 'bio': bio,
+        if (bio != null && bio.isNotEmpty) 'bio': bio,
       },
       profilePicture,
       token,
     );
 
-    return User.fromJson(jsonDecode(response.body));
+    return User.fromJson(jsonDecode(response.body) ?? {});
   }
 
   Future<void> updatePassword(String password) async {

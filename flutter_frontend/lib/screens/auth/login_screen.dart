@@ -5,6 +5,7 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../home_screen.dart';
 import 'register_screen.dart';
+import '../../models/user.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  String? _usernameError;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -23,71 +26,113 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() async {
-    setState(() => _isLoading = true);
-    final success = await Provider.of<AuthProvider>(
-      context,
-      listen: false,
-    ).login(_usernameController.text, _passwordController.text);
-    setState(() => _isLoading = false);
+  void _validateAndLogin() async {
+    setState(() {
+      _usernameError = User.validateUsername(_usernameController.text);
+      _passwordError =
+          _passwordController.text.isEmpty
+              ? 'Password is required'
+              : _passwordController.text.length < 5
+              ? 'Password must be at least 5 characters'
+              : null;
+    });
 
-    if (success) {
-      Navigator.pushReplacement(
+    if (_usernameError == null && _passwordError == null) {
+      setState(() => _isLoading = true);
+      final success = await Provider.of<AuthProvider>(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+        listen: false,
+      ).login(_usernameController.text, _passwordController.text);
+      setState(() => _isLoading = false);
+
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        final error = Provider.of<AuthProvider>(context, listen: false).error;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error ?? 'Invalid credentials')));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Login to PeerLink',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 24),
-            CustomTextField(
-              label: 'Username',
-              controller: _usernameController,
-              errorText:
-                  authProvider.error!.contains('username')
-                      ? authProvider.error
-                      : null,
-            ),
-            SizedBox(height: 16),
-            CustomTextField(
-              label: 'Password',
-              controller: _passwordController,
-              obscureText: true,
-              errorText:
-                  authProvider.error!.contains('password')
-                      ? authProvider.error
-                      : null,
-            ),
-            SizedBox(height: 24),
-            CustomButton(
-              text: 'Login',
-              onPressed: _login,
-              isLoading: _isLoading,
-            ),
-            SizedBox(height: 16),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterScreen()),
-                );
-              },
-              child: Text('First time? Sign up here'),
-            ),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 40),
+              Text(
+                'Welcome Back',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Login to continue',
+                style: TextStyle(fontSize: 18, color: Colors.grey[600]),
+              ),
+              SizedBox(height: 32),
+              CustomTextField(
+                label: 'Username',
+                controller: _usernameController,
+                errorText: _usernameError,
+                onChanged:
+                    (value) => setState(() {
+                      _usernameError = User.validateUsername(value);
+                    }),
+              ),
+              SizedBox(height: 16),
+              CustomTextField(
+                label: 'Password',
+                controller: _passwordController,
+                obscureText: true,
+                errorText: _passwordError,
+                onChanged:
+                    (value) => setState(() {
+                      _passwordError =
+                          value.isEmpty
+                              ? 'Password is required'
+                              : value.length < 5
+                              ? 'Password must be at least 5 characters'
+                              : null;
+                    }),
+              ),
+              SizedBox(height: 24),
+              CustomButton(
+                text: 'Login',
+                onPressed: _validateAndLogin,
+                isLoading: _isLoading,
+              ),
+              SizedBox(height: 16),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Don’t have an account? Sign up',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

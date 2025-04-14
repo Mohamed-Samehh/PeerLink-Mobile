@@ -6,8 +6,8 @@ class Follow {
 
   factory Follow.fromJson(Map<String, dynamic> json) {
     return Follow(
-      followerId: json['follower_id'],
-      followedId: json['followed_id'],
+      followerId: json['follower_id'] ?? 0,
+      followedId: json['followed_id'] ?? 0,
     );
   }
 }
