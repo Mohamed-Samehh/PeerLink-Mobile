@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/post_provider.dart';
+import '../../core/providers/user_provider.dart';
 import '../../core/providers/auth_provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../shared/post_card.dart';
@@ -18,6 +19,7 @@ class _FeedScreenState extends State<FeedScreen> {
     super.initState();
     Future.microtask(() {
       context.read<PostProvider>().getPosts();
+      context.read<UserProvider>().getProfile();
     });
   }
 
@@ -29,7 +31,8 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     final postProvider = context.watch<PostProvider>();
     final authProvider = context.watch<AuthProvider>();
-    final user = authProvider.user;
+    final userProvider = context.watch<UserProvider>();
+    final user = userProvider.currentUser;
 
     return Scaffold(
       appBar: AppBar(

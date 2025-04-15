@@ -98,13 +98,6 @@ class PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                // Post actions menu
-                if (isCurrentUser)
-                  IconButton(
-                    icon: const Icon(Icons.more_vert),
-                    onPressed: () => _showDeleteConfirmation(context),
-                  ),
               ],
             ),
           ),
@@ -154,27 +147,43 @@ class PostCard extends StatelessWidget {
               ),
             ),
 
-          // Post actions (like)
+          // Post actions (like and delete)
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(
-                  icon: Icon(
-                    post.userLiked ? Icons.favorite : Icons.favorite_border,
-                    color: post.userLiked ? AppColors.accent : null,
-                  ),
-                  onPressed: onLike,
+                // Like button and count
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        post.userLiked ? Icons.favorite : Icons.favorite_border,
+                        color: post.userLiked ? AppColors.accent : null,
+                      ),
+                      onPressed: onLike,
+                    ),
+                    Text(
+                      '${post.likesCount}',
+                      style: TextStyle(
+                        color:
+                            post.userLiked
+                                ? AppColors.accent
+                                : AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  '${post.likesCount}',
-                  style: TextStyle(
-                    color:
-                        post.userLiked
-                            ? AppColors.accent
-                            : AppColors.textSecondary,
+
+                // Delete button (only for current user's posts)
+                if (isCurrentUser)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: AppColors.error,
+                    ),
+                    onPressed: () => _showDeleteConfirmation(context),
                   ),
-                ),
               ],
             ),
           ),
