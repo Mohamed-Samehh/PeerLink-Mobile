@@ -189,7 +189,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               onPressed:
                   postProvider.isCreatingPost ? null : _showImageSourceModal,
               icon: const Icon(Icons.image),
-              label: const Text('Add Image'),
+              label: const Text('Add Image (Optional)'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 foregroundColor: AppColors.primary,
