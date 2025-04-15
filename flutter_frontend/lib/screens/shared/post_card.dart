@@ -47,6 +47,7 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localCreatedAt = post.createdAt.toLocal();
     final dateFormat = DateFormat('MMM d, yyyy • h:mm a');
 
     return Card(
@@ -91,7 +92,7 @@ class PostCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '@${post.user?.username ?? 'unknown'} • ${dateFormat.format(post.createdAt)}',
+                        '@${post.user?.username ?? 'unknown'} • ${dateFormat.format(localCreatedAt)}',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
