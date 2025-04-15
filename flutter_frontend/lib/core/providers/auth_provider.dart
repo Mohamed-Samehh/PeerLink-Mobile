@@ -33,8 +33,6 @@ class AuthProvider with ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('token');
 
-      print("Token retrieved during AuthProvider init: $token");
-
       if (token != null && token.isNotEmpty) {
         // Token exists, set to authenticated
         _status = AuthStatus.authenticated;
