@@ -109,7 +109,8 @@ class ApiClient {
       final Uri uri = Uri.parse(Endpoints.baseUrl + endpoint);
       http.Response response;
 
-      if (files != null && files.isNotEmpty) {
+      if ((endpoint == Endpoints.profile) ||
+          (files != null && files.isNotEmpty)) {
         final request = http.MultipartRequest('POST', uri);
         request.headers.addAll(_headers);
 
@@ -118,10 +119,12 @@ class ApiClient {
 
         request.fields.addAll(updatedFields);
 
-        for (final entry in files.entries) {
-          request.files.add(
-            await http.MultipartFile.fromPath(entry.key, entry.value.path),
-          );
+        if (files != null && files.isNotEmpty) {
+          for (final entry in files.entries) {
+            request.files.add(
+              await http.MultipartFile.fromPath(entry.key, entry.value.path),
+            );
+          }
         }
 
         final streamedResponse = await request.send();
