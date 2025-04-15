@@ -20,7 +20,7 @@ void main() async {
 
   runApp(
     DevicePreview(
-      enabled: true, // You can set this to false in production
+      enabled: true,
       builder:
           (context) => MultiProvider(
             providers: [
