@@ -9,8 +9,4 @@ class AppConstants {
 
   // App Constants
   static const String appName = 'PeerLink';
-
-  // Image placeholders
-  static const String defaultProfileImage = 'assets/images/default_profile.png';
-  static const String defaultPostImage = 'assets/images/default_post.png';
 }
