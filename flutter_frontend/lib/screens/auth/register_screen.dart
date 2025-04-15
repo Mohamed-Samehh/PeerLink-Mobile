@@ -7,6 +7,7 @@ import '../../core/providers/auth_provider.dart';
 import '../../core/utils/form_validators.dart';
 import '../../core/utils/image_helper.dart';
 import '../../core/constants/app_colors.dart';
+import '../home/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -154,7 +155,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         profilePicture: _profileImage!,
       );
 
-      if (authProvider.errorMessage != null) {
+      // Check if registration was successful
+      if (authProvider.status == AuthStatus.authenticated) {
+        if (!mounted) return;
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+
+        // Navigate to home screen and remove all previous routes
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false,
+        );
+      } else if (authProvider.errorMessage != null) {
         if (!mounted) return;
 
         // Show validation errors if any
