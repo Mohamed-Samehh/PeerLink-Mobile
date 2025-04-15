@@ -24,6 +24,11 @@ class PostController extends Controller
             ->map(function ($post) use ($request) {
                 $post->image_url = $post->image ? Storage::url($post->image) : null;
                 $post->user_liked = $post->likes->contains('user_id', $request->user()->id);
+                
+                if ($post->user && $post->user->profile_picture) {
+                    $post->user->profile_picture_url = Storage::url($post->user->profile_picture);
+                }
+                
                 return $post;
             });
 

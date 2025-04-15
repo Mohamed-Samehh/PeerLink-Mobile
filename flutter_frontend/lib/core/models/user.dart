@@ -26,6 +26,11 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     String? profilePictureUrl = json['profile_picture_url'];
 
+    if (profilePictureUrl == null && json['profile_picture'] != null) {
+      profilePictureUrl =
+          'http://127.0.0.1:8000/storage/${json['profile_picture']}';
+    }
+
     if (profilePictureUrl != null && !profilePictureUrl.startsWith('http')) {
       profilePictureUrl =
           'http://127.0.0.1:8000${profilePictureUrl.startsWith('/') ? '' : '/'}$profilePictureUrl';

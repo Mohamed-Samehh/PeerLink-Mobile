@@ -29,13 +29,26 @@ class Post {
           'http://127.0.0.1:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
     }
 
+    User? postUser;
+    if (json['user'] != null) {
+      Map<String, dynamic> userJson = Map<String, dynamic>.from(json['user']);
+
+      if (userJson['profile_picture_url'] == null &&
+          userJson['profile_picture'] != null) {
+        userJson['profile_picture_url'] =
+            'http://127.0.0.1:8000/storage/${userJson['profile_picture']}';
+      }
+
+      postUser = User.fromJson(userJson);
+    }
+
     return Post(
       id: json['id'],
       userId: json['user_id'],
       content: json['content'],
       imageUrl: imageUrl,
       createdAt: DateTime.parse(json['created_at']),
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
+      user: postUser,
       likesCount: json['likes'] != null ? json['likes'].length : 0,
       userLiked: json['user_liked'] ?? false,
     );

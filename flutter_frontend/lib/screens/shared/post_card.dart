@@ -66,11 +66,13 @@ class PostCard extends StatelessWidget {
                   radius: 20,
                   backgroundColor: AppColors.primaryLight,
                   backgroundImage:
-                      post.user?.profilePictureUrl != null
+                      post.user?.profilePictureUrl != null &&
+                              post.user!.profilePictureUrl!.isNotEmpty
                           ? NetworkImage(post.user!.profilePictureUrl!)
                           : null,
                   child:
-                      post.user?.profilePictureUrl == null
+                      post.user?.profilePictureUrl == null ||
+                              post.user!.profilePictureUrl!.isEmpty
                           ? const Icon(Icons.person, color: Colors.white)
                           : null,
                 ),
