@@ -24,6 +24,13 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
+    String? profilePictureUrl = json['profile_picture_url'];
+
+    if (profilePictureUrl != null && !profilePictureUrl.startsWith('http')) {
+      profilePictureUrl =
+          'http://127.0.0.1:8000${profilePictureUrl.startsWith('/') ? '' : '/'}$profilePictureUrl';
+    }
+
     return User(
       id: json['id'],
       name: json['name'],
@@ -33,7 +40,7 @@ class User {
       dob: json['dob'],
       gender: json['gender'],
       bio: json['bio'],
-      profilePictureUrl: json['profile_picture_url'],
+      profilePictureUrl: profilePictureUrl,
       isFollowed: json['is_followed'] == 1,
     );
   }
