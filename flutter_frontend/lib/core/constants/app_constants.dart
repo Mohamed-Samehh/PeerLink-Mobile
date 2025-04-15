@@ -8,7 +8,7 @@ class AppConstants {
   static const String userKey = 'user';
 
   // App Constants
-  static const String appName = 'Social App';
+  static const String appName = 'PeerLink';
 
   // Image placeholders
   static const String defaultProfileImage = 'assets/images/default_profile.png';

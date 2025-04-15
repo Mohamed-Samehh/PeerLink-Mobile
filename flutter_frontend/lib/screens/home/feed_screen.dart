@@ -34,7 +34,7 @@ class _FeedScreenState extends State<FeedScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Social App',
+          'PeerLink',
           style: TextStyle(
             color: AppColors.primary,
             fontWeight: FontWeight.bold,

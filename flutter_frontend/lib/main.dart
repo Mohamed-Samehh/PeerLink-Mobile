@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Social App',
+      title: 'PeerLink',
       debugShowCheckedModeBanner: false,
       useInheritedMediaQuery: true, // Required for device preview
       locale: DevicePreview.locale(context), // Required for device preview

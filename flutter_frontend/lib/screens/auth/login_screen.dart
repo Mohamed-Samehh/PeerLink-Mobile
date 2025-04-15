@@ -77,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // App name
                   const Text(
-                    'Social App',
+                    'PeerLink',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,
