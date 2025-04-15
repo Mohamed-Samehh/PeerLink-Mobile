@@ -110,12 +110,13 @@ class ApiClient {
       http.Response response;
 
       if (files != null && files.isNotEmpty) {
-        final request = http.MultipartRequest('PUT', uri);
+        final request = http.MultipartRequest('POST', uri);
         request.headers.addAll(_headers);
 
-        if (fields != null) {
-          request.fields.addAll(fields);
-        }
+        Map<String, String> updatedFields = fields ?? {};
+        updatedFields['_method'] = 'PUT';
+
+        request.fields.addAll(updatedFields);
 
         for (final entry in files.entries) {
           request.files.add(
