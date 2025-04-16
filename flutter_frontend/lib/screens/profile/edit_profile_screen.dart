@@ -207,9 +207,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(color: Colors.white),
         title: const Text('Edit Profile'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        elevation: 2,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body:
           userProvider.isLoading
