@@ -40,6 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
+      if (!mounted) return;
+
       if (authProvider.errorMessage != null) {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(

@@ -18,13 +18,28 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<PostProvider>().getPosts();
-      context.read<UserProvider>().getProfile();
+      if (mounted) {
+        final postProvider = context.read<PostProvider>();
+        final userProvider = context.read<UserProvider>();
+        postProvider.getPosts();
+        userProvider.getProfile();
+      }
     });
   }
 
   Future<void> _refreshFeed() async {
-    await context.read<PostProvider>().getPosts();
+    if (mounted) {
+      await context.read<PostProvider>().getPosts();
+    }
+  }
+
+  void _showDeleteSuccessSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Post deleted successfully'),
+        backgroundColor: AppColors.success,
+      ),
+    );
   }
 
   @override
@@ -81,13 +96,10 @@ class _FeedScreenState extends State<FeedScreen> {
                       isCurrentUser: post.userId == user?.id,
                       onDelete: () async {
                         final success = await postProvider.deletePost(post.id);
-                        if (success && mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Post deleted successfully'),
-                              backgroundColor: AppColors.success,
-                            ),
-                          );
+                        if (!mounted) return;
+
+                        if (success) {
+                          _showDeleteSuccessSnackBar();
                         }
                       },
                       onLike: () async {

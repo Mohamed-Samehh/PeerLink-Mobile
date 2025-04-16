@@ -25,8 +25,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<UserProvider>().getProfile();
-      _loadUserStats();
+      if (mounted) {
+        final userProvider = context.read<UserProvider>();
+        userProvider.getProfile();
+        _loadUserStats();
+      }
     });
   }
 
@@ -41,11 +44,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await postProvider.getUserPosts();
 
       // Get followers and following counts
-      final userProvider = context.read<UserProvider>();
-      await userProvider.getFollowers();
-      await userProvider.getFollowing();
-
       if (mounted) {
+        final userProvider = context.read<UserProvider>();
+        await userProvider.getFollowers();
+        await userProvider.getFollowing();
+
         setState(() {
           _postsCount = postProvider.userPosts.length;
           _followersCount = userProvider.followers.length;
@@ -54,13 +57,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      print("Error loading user stats: $e");
       if (mounted) {
         setState(() {
           _isLoadingStats = false;
         });
       }
     }
+  }
+
+  void _showDeleteSuccessSnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Post deleted successfully'),
+        backgroundColor: AppColors.success,
+      ),
+    );
   }
 
   @override
@@ -307,14 +318,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           isCurrentUser: true,
           onDelete: () async {
             final success = await postProvider.deletePost(post.id);
-            if (success && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Post deleted successfully'),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-              // Refresh stats after deleting
+            if (!mounted) return;
+
+            if (success) {
+              _showDeleteSuccessSnackBar();
               _loadUserStats();
             }
           },

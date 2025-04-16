@@ -16,38 +16,16 @@ class ImageHelper {
       status = await Permission.photos.request();
     }
 
+    if (!context.mounted) return null;
+
     if (status.isDenied) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Permission denied')));
+      _showSnackBar(context, 'Permission denied');
       return null;
     }
 
     if (status.isPermanentlyDenied) {
       // Show dialog to open app settings
-      showDialog(
-        context: context,
-        builder:
-            (BuildContext context) => AlertDialog(
-              title: const Text('Permission Required'),
-              content: const Text(
-                'This app needs permission to access your photos/camera. Please grant this permission in app settings.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    openAppSettings();
-                  },
-                  child: const Text('Open Settings'),
-                ),
-              ],
-            ),
-      );
+      await _showPermissionDialog(context);
       return null;
     }
 
@@ -60,14 +38,57 @@ class ImageHelper {
         maxWidth: 1000,
       );
 
+      if (!context.mounted) return null;
+
       if (pickedFile == null) return null;
 
       return File(pickedFile.path);
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      if (!context.mounted) return null;
+
+      _showSnackBar(context, 'Error picking image: $e');
       return null;
+    }
+  }
+
+  static void _showSnackBar(BuildContext context, String message) {
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  static Future<void> _showPermissionDialog(BuildContext context) async {
+    if (!context.mounted) return;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder:
+          (BuildContext dialogContext) => AlertDialog(
+            title: const Text('Permission Required'),
+            content: const Text(
+              'This app needs permission to access your photos/camera. Please grant this permission in app settings.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext, true);
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+    );
+
+    if (!context.mounted) return;
+
+    if (result == true) {
+      await openAppSettings();
     }
   }
 

@@ -69,7 +69,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PeerLink',
       debugShowCheckedModeBanner: false,
-      useInheritedMediaQuery: true, // Required for device preview
       locale: DevicePreview.locale(context), // Required for device preview
       builder: DevicePreview.appBuilder, // Required for device preview
       theme: ThemeData(

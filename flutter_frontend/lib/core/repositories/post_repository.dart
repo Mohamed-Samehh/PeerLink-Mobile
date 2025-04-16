@@ -56,7 +56,7 @@ class PostRepository {
 
   Future<ApiResponse<List<Post>>> getUserPostsById(int userId) async {
     final response = await _apiClient.get(
-      Endpoints.userPostsById + userId.toString() + "/posts",
+      "${Endpoints.userPostsById}$userId/posts",
     );
 
     if (response.success && response.data != null) {

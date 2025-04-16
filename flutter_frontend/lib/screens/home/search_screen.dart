@@ -87,7 +87,7 @@ class _SearchScreenState extends State<SearchScreen>
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withOpacity(0.7),
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
           tabs: const [
             Tab(text: 'Following'),
             Tab(text: 'Followers'),
