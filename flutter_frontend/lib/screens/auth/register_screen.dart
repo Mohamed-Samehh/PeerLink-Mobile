@@ -105,16 +105,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (_formKey.currentState!.validate()) {
-      if (_profileImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a profile picture'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-        return;
-      }
-
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -152,7 +142,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             _bioController.text.trim().isNotEmpty
                 ? _bioController.text.trim()
                 : null,
-        profilePicture: _profileImage!,
+        profilePicture: _profileImage,
       );
 
       // Check if registration was successful
@@ -214,9 +204,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(color: Colors.white),
         title: const Text('Create Account'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
+        elevation: 2,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -226,7 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Profile picture
+                // Profile picture (optional)
                 Center(
                   child: Stack(
                     children: [
@@ -265,7 +257,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 8),
+                const Center(
+                  child: Text(
+                    'Profile Picture (Optional)',
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
 
                 // Name field
                 TextFormField(
@@ -338,7 +340,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _phoneController,
                   decoration: const InputDecoration(
-                    labelText: 'Phone Number (optional)',
+                    labelText: 'Phone Number (Optional)',
                     prefixIcon: Icon(Icons.phone),
                     border: OutlineInputBorder(),
                   ),
@@ -409,7 +411,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 TextFormField(
                   controller: _bioController,
                   decoration: const InputDecoration(
-                    labelText: 'Bio (optional)',
+                    labelText: 'Bio (Optional)',
                     prefixIcon: Icon(Icons.info),
                     border: OutlineInputBorder(),
                   ),

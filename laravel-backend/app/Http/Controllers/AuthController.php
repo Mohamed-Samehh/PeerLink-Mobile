@@ -21,17 +21,14 @@ class AuthController extends Controller
             'dob' => 'required|date|before:today',
             'gender' => 'required|in:Male,Female',
             'bio' => 'nullable|string|max:100',
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $image = $request->file('profile_picture');
-        $path = $image->store('profiles', 'public');
-
-        $user = User::create([
+        $userData = [
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
@@ -40,10 +37,20 @@ class AuthController extends Controller
             'dob' => $request->dob,
             'gender' => $request->gender,
             'bio' => $request->bio,
-            'profile_picture' => $path,
-        ]);
+        ];
+
+        if ($request->hasFile('profile_picture')) {
+            $image = $request->file('profile_picture');
+            $userData['profile_picture'] = $image->store('profiles', 'public');
+        }
+
+        $user = User::create($userData);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        if ($user->profile_picture) {
+            $user->profile_picture_url = url('storage/' . $user->profile_picture);
+        }
 
         return response()->json(['user' => $user, 'token' => $token], 201);
     }
@@ -66,6 +73,10 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        if ($user->profile_picture) {
+            $user->profile_picture_url = url('storage/' . $user->profile_picture);
+        }
 
         return response()->json(['user' => $user, 'token' => $token]);
     }

@@ -17,7 +17,7 @@ class AuthRepository {
     required String gender,
     String? phoneNum,
     String? bio,
-    required File profilePicture,
+    File? profilePicture,
   }) async {
     final fields = {
       'name': name,
@@ -30,7 +30,8 @@ class AuthRepository {
       if (bio != null) 'bio': bio,
     };
 
-    final files = {'profile_picture': profilePicture};
+    final files =
+        profilePicture != null ? {'profile_picture': profilePicture} : null;
 
     return await _apiClient.post<Map<String, dynamic>>(
       Endpoints.register,

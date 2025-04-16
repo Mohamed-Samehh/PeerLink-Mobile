@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../repositories/auth_repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthStatus { initial, authenticated, unauthenticated }
 
@@ -62,7 +62,7 @@ class AuthProvider with ChangeNotifier {
     required String gender,
     String? phoneNum,
     String? bio,
-    required File profilePicture,
+    File? profilePicture,
   }) async {
     _isLoading = true;
     _errorMessage = null;
