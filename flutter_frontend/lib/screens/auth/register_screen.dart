@@ -257,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 const Center(
                   child: Text(
-                    'Profile Picture (Optional)',
+                    'Profile Picture',
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 14,
