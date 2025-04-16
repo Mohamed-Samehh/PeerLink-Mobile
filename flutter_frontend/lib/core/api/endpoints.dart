@@ -17,6 +17,10 @@ class Endpoints {
   // Follow
   static const String follow = '/follow/';
   static const String search = '/search';
+  static const String following = '/following';
+  static const String followers = '/followers';
+  static const String followBack = '/follow-back';
+  static const String explore = '/explore';
 
   // Like
   static const String like = '/like/';

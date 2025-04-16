@@ -66,9 +66,105 @@ class UserRepository {
       queryParams: {'search': query},
       fromJson:
           (json) =>
-              (json['data'] as List)
+              (json['data'] as List? ?? [])
                   .map((item) => User.fromJson(item))
                   .toList(),
+    );
+  }
+
+  Future<ApiResponse<List<User>>> getFollowing() async {
+    final response = await _apiClient.get(Endpoints.following);
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> usersJson = response.data;
+        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        return ApiResponse<List<User>>(success: true, data: users);
+      } catch (e) {
+        return ApiResponse<List<User>>(
+          success: false,
+          message: "Failed to parse user data",
+        );
+      }
+    }
+
+    return ApiResponse<List<User>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
+    );
+  }
+
+  Future<ApiResponse<List<User>>> getFollowers() async {
+    final response = await _apiClient.get(Endpoints.followers);
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> usersJson = response.data;
+        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        return ApiResponse<List<User>>(success: true, data: users);
+      } catch (e) {
+        return ApiResponse<List<User>>(
+          success: false,
+          message: "Failed to parse user data",
+        );
+      }
+    }
+
+    return ApiResponse<List<User>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
+    );
+  }
+
+  Future<ApiResponse<List<User>>> getFollowBack() async {
+    final response = await _apiClient.get(Endpoints.followBack);
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> usersJson = response.data;
+        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        return ApiResponse<List<User>>(success: true, data: users);
+      } catch (e) {
+        return ApiResponse<List<User>>(
+          success: false,
+          message: "Failed to parse user data",
+        );
+      }
+    }
+
+    return ApiResponse<List<User>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
+    );
+  }
+
+  Future<ApiResponse<List<User>>> getExplore() async {
+    final response = await _apiClient.get(Endpoints.explore);
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> usersJson = response.data;
+        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        return ApiResponse<List<User>>(success: true, data: users);
+      } catch (e) {
+        return ApiResponse<List<User>>(
+          success: false,
+          message: "Failed to parse user data",
+        );
+      }
+    }
+
+    return ApiResponse<List<User>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
     );
   }
 
