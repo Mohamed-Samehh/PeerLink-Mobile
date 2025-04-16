@@ -9,11 +9,13 @@ class Endpoints {
   // User
   static const String profile = '/profile';
   static const String updatePassword = '/password';
+  static const String userProfile = '/users/';
 
   // Posts
   static const String posts = '/posts';
   static const String post = '/posts/';
   static const String userPosts = '/user-posts';
+  static const String userPostsById = '/users/';
 
   // Follow
   static const String follow = '/follow/';

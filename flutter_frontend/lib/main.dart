@@ -5,6 +5,7 @@ import 'core/api/api_client.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/post_provider.dart';
 import 'core/providers/user_provider.dart';
+import 'core/providers/user_profile_provider.dart';
 import 'core/repositories/auth_repository.dart';
 import 'core/repositories/post_repository.dart';
 import 'core/repositories/user_repository.dart';
@@ -45,6 +46,13 @@ void main() async {
               ChangeNotifierProvider(
                 create:
                     (context) => PostProvider(context.read<PostRepository>()),
+              ),
+              ChangeNotifierProvider(
+                create:
+                    (context) => UserProfileProvider(
+                      context.read<UserRepository>(),
+                      context.read<PostRepository>(),
+                    ),
               ),
             ],
             child: const MyApp(),

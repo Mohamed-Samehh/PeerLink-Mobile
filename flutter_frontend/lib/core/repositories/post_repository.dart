@@ -54,6 +54,40 @@ class PostRepository {
     );
   }
 
+  Future<ApiResponse<List<Post>>> getUserPostsById(int userId) async {
+    final response = await _apiClient.get(
+      Endpoints.userPostsById + userId.toString() + "/posts",
+    );
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> postsJson;
+        if (response.data is List) {
+          postsJson = response.data;
+        } else if (response.data is Map && response.data.containsKey('data')) {
+          postsJson = response.data['data'];
+        } else {
+          postsJson = [];
+        }
+
+        final posts = postsJson.map((json) => Post.fromJson(json)).toList();
+        return ApiResponse<List<Post>>(success: true, data: posts);
+      } catch (e) {
+        return ApiResponse<List<Post>>(
+          success: false,
+          message: "Failed to parse user posts data",
+        );
+      }
+    }
+
+    return ApiResponse<List<Post>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
+    );
+  }
+
   Future<ApiResponse<Post>> createPost({
     required String content,
     File? image,

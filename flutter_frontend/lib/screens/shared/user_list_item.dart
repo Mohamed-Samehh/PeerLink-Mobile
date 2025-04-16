@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/models/user.dart';
 import '../../core/constants/app_colors.dart';
+import '../user/user_profile_screen.dart';
 
 class UserListItem extends StatelessWidget {
   final User user;
@@ -12,19 +13,34 @@ class UserListItem extends StatelessWidget {
     required this.onToggleFollow,
   });
 
+  void _navigateToUserProfile(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) =>
+                UserProfileScreen(userId: user.id, username: user.username),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: AppColors.primaryLight,
-        backgroundImage:
-            user.profilePictureUrl != null
-                ? NetworkImage(user.profilePictureUrl!)
-                : null,
-        child:
-            user.profilePictureUrl == null
-                ? const Icon(Icons.person, color: Colors.white)
-                : null,
+      onTap: () => _navigateToUserProfile(context),
+      leading: GestureDetector(
+        onTap: () => _navigateToUserProfile(context),
+        child: CircleAvatar(
+          backgroundColor: AppColors.primaryLight,
+          backgroundImage:
+              user.profilePictureUrl != null
+                  ? NetworkImage(user.profilePictureUrl!)
+                  : null,
+          child:
+              user.profilePictureUrl == null
+                  ? const Icon(Icons.person, color: Colors.white)
+                  : null,
+        ),
       ),
       title: Text(
         user.name,

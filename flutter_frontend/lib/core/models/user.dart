@@ -9,6 +9,9 @@ class User {
   final String? bio;
   final String? profilePictureUrl;
   final bool isFollowed;
+  final int? postsCount;
+  final int? followersCount;
+  final int? followingCount;
 
   User({
     required this.id,
@@ -21,6 +24,9 @@ class User {
     this.bio,
     this.profilePictureUrl,
     this.isFollowed = false,
+    this.postsCount,
+    this.followersCount,
+    this.followingCount,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -47,6 +53,9 @@ class User {
       bio: json['bio'],
       profilePictureUrl: profilePictureUrl,
       isFollowed: json['is_followed'] == 1,
+      postsCount: json['posts_count'],
+      followersCount: json['followers_count'],
+      followingCount: json['following_count'],
     );
   }
 
@@ -61,6 +70,10 @@ class User {
       'gender': gender,
       'bio': bio,
       'profile_picture_url': profilePictureUrl,
+      'is_followed': isFollowed ? 1 : 0,
+      'posts_count': postsCount,
+      'followers_count': followersCount,
+      'following_count': followingCount,
     };
   }
 
@@ -74,6 +87,10 @@ class User {
     String? gender,
     String? bio,
     String? profilePictureUrl,
+    bool? isFollowed,
+    int? postsCount,
+    int? followersCount,
+    int? followingCount,
   }) {
     return User(
       id: id ?? this.id,
@@ -85,7 +102,10 @@ class User {
       gender: gender ?? this.gender,
       bio: bio ?? this.bio,
       profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
-      isFollowed: isFollowed,
+      isFollowed: isFollowed ?? this.isFollowed,
+      postsCount: postsCount ?? this.postsCount,
+      followersCount: followersCount ?? this.followersCount,
+      followingCount: followingCount ?? this.followingCount,
     );
   }
 }

@@ -10,9 +10,48 @@ class UserRepository {
   UserRepository(this._apiClient);
 
   Future<ApiResponse<User>> getProfile() async {
-    return await _apiClient.get<User>(
-      Endpoints.profile,
-      fromJson: (json) => User.fromJson(json),
+    final response = await _apiClient.get(Endpoints.profile);
+
+    if (response.success && response.data != null) {
+      try {
+        final user = User.fromJson(response.data);
+        return ApiResponse<User>(success: true, data: user);
+      } catch (e) {
+        return ApiResponse<User>(
+          success: false,
+          message: "Failed to parse profile data",
+        );
+      }
+    }
+
+    return ApiResponse<User>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+    );
+  }
+
+  Future<ApiResponse<User>> getUserProfile(int userId) async {
+    final response = await _apiClient.get(
+      Endpoints.userProfile + userId.toString(),
+    );
+
+    if (response.success && response.data != null) {
+      try {
+        final user = User.fromJson(response.data);
+        return ApiResponse<User>(success: true, data: user);
+      } catch (e) {
+        return ApiResponse<User>(
+          success: false,
+          message: "Failed to parse user profile data",
+        );
+      }
+    }
+
+    return ApiResponse<User>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
     );
   }
 

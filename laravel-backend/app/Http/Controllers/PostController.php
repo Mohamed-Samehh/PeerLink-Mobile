@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -42,6 +43,30 @@ class PostController extends Controller
         }
 
         $posts = Post::where('user_id', $request->user()->id)
+            ->with(['user', 'likes'])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($post) use ($request) {
+                $post->image_url = $post->image ? Storage::url($post->image) : null;
+                $post->user_liked = $post->likes->contains('user_id', $request->user()->id);
+                
+                if ($post->user && $post->user->profile_picture) {
+                    $post->user->profile_picture_url = Storage::url($post->user->profile_picture);
+                }
+                
+                return $post;
+            });
+
+        return response()->json($posts);
+    }
+
+    public function getUserPosts(Request $request, User $user)
+    {
+        if (!$request->user()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $posts = Post::where('user_id', $user->id)
             ->with(['user', 'likes'])
             ->orderBy('id', 'desc')
             ->get()

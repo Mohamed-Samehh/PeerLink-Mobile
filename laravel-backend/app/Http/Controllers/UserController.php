@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Follow;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -15,6 +18,21 @@ class UserController extends Controller
     {
         $user = $request->user();
         $user->profile_picture_url = $user->profile_picture ? Storage::url($user->profile_picture) : null;
+        return response()->json($user);
+    }
+
+    public function userProfile(Request $request, User $user)
+    {
+        $user->profile_picture_url = $user->profile_picture ? Storage::url($user->profile_picture) : null;
+
+        $user->is_followed = Follow::where('follower_id', $request->user()->id)
+            ->where('followed_id', $user->id)
+            ->exists() ? 1 : 0;
+
+        $user->posts_count = Post::where('user_id', $user->id)->count();
+        $user->followers_count = Follow::where('followed_id', $user->id)->count();
+        $user->following_count = Follow::where('follower_id', $user->id)->count();
+        
         return response()->json($user);
     }
 
