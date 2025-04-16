@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -49,13 +48,19 @@ class UserController extends Controller
             'gender' => 'in:Male,Female',
             'bio' => 'nullable|string|max:100',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'remove_profile_picture' => 'nullable|string|in:true',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        if ($request->hasFile('profile_picture')) {
+        if ($request->has('remove_profile_picture') && $request->remove_profile_picture === 'true') {
+            if ($user->profile_picture) {
+                Storage::disk('public')->delete($user->profile_picture);
+                $user->profile_picture = null;
+            }
+        } elseif ($request->hasFile('profile_picture')) {
             if ($user->profile_picture) {
                 Storage::disk('public')->delete($user->profile_picture);
             }

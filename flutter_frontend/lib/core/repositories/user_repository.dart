@@ -31,6 +31,71 @@ class UserRepository {
     );
   }
 
+  Future<ApiResponse<User>> updateProfile({
+    String? name,
+    String? username,
+    String? email,
+    String? phoneNum,
+    String? dob,
+    String? gender,
+    String? bio,
+    File? profilePicture,
+    bool removeProfilePicture = false,
+  }) async {
+    final fields = <String, String>{};
+
+    if (name != null) fields['name'] = name;
+    if (username != null) fields['username'] = username;
+    if (email != null) fields['email'] = email;
+    if (phoneNum != null) fields['phone_num'] = phoneNum;
+    if (dob != null) fields['dob'] = dob;
+    if (gender != null) fields['gender'] = gender;
+    if (bio != null) fields['bio'] = bio;
+    if (removeProfilePicture) fields['remove_profile_picture'] = 'true';
+
+    final files =
+        (profilePicture != null && !removeProfilePicture)
+            ? {'profile_picture': profilePicture}
+            : null;
+
+    final response = await _apiClient.put(
+      Endpoints.profile,
+      fields: fields,
+      files: files,
+    );
+
+    if (response.success && response.data != null) {
+      try {
+        final user = User.fromJson(response.data);
+        return ApiResponse<User>(success: true, data: user);
+      } catch (e) {
+        return ApiResponse<User>(
+          success: false,
+          message: "Failed to parse updated profile data",
+        );
+      }
+    }
+
+    return ApiResponse<User>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+    );
+  }
+
+  Future<ApiResponse<Map<String, dynamic>>> updatePassword({
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    return await _apiClient.put<Map<String, dynamic>>(
+      Endpoints.updatePassword,
+      data: {
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      },
+    );
+  }
+
   Future<ApiResponse<User>> getUserProfile(int userId) async {
     final response = await _apiClient.get(
       Endpoints.userProfile + userId.toString(),
@@ -55,59 +120,30 @@ class UserRepository {
     );
   }
 
-  Future<ApiResponse<User>> updateProfile({
-    String? name,
-    String? username,
-    String? email,
-    String? phoneNum,
-    String? dob,
-    String? gender,
-    String? bio,
-    File? profilePicture,
-  }) async {
-    final fields = <String, String>{};
-
-    if (name != null) fields['name'] = name;
-    if (username != null) fields['username'] = username;
-    if (email != null) fields['email'] = email;
-    if (phoneNum != null) fields['phone_num'] = phoneNum;
-    if (dob != null) fields['dob'] = dob;
-    if (gender != null) fields['gender'] = gender;
-    if (bio != null) fields['bio'] = bio;
-
-    final files =
-        profilePicture != null ? {'profile_picture': profilePicture} : null;
-
-    return await _apiClient.put<User>(
-      Endpoints.profile,
-      fields: fields,
-      files: files,
-      fromJson: (json) => User.fromJson(json),
-    );
-  }
-
-  Future<ApiResponse<Map<String, dynamic>>> updatePassword({
-    required String password,
-    required String passwordConfirmation,
-  }) async {
-    return await _apiClient.put<Map<String, dynamic>>(
-      Endpoints.updatePassword,
-      data: {
-        'password': password,
-        'password_confirmation': passwordConfirmation,
-      },
-    );
-  }
-
   Future<ApiResponse<List<User>>> searchUsers(String query) async {
-    return await _apiClient.get<List<User>>(
+    final response = await _apiClient.get(
       Endpoints.search,
       queryParams: {'search': query},
-      fromJson:
-          (json) =>
-              (json['data'] as List? ?? [])
-                  .map((item) => User.fromJson(item))
-                  .toList(),
+    );
+
+    if (response.success && response.data != null) {
+      try {
+        final List<dynamic> usersJson = response.data;
+        final users = usersJson.map((item) => User.fromJson(item)).toList();
+        return ApiResponse<List<User>>(success: true, data: users);
+      } catch (e) {
+        return ApiResponse<List<User>>(
+          success: false,
+          message: "Failed to parse search results",
+        );
+      }
+    }
+
+    return ApiResponse<List<User>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
     );
   }
 
@@ -117,12 +153,12 @@ class UserRepository {
     if (response.success && response.data != null) {
       try {
         final List<dynamic> usersJson = response.data;
-        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        final users = usersJson.map((item) => User.fromJson(item)).toList();
         return ApiResponse<List<User>>(success: true, data: users);
       } catch (e) {
         return ApiResponse<List<User>>(
           success: false,
-          message: "Failed to parse user data",
+          message: "Failed to parse following data",
         );
       }
     }
@@ -141,12 +177,12 @@ class UserRepository {
     if (response.success && response.data != null) {
       try {
         final List<dynamic> usersJson = response.data;
-        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        final users = usersJson.map((item) => User.fromJson(item)).toList();
         return ApiResponse<List<User>>(success: true, data: users);
       } catch (e) {
         return ApiResponse<List<User>>(
           success: false,
-          message: "Failed to parse user data",
+          message: "Failed to parse followers data",
         );
       }
     }
@@ -165,12 +201,12 @@ class UserRepository {
     if (response.success && response.data != null) {
       try {
         final List<dynamic> usersJson = response.data;
-        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        final users = usersJson.map((item) => User.fromJson(item)).toList();
         return ApiResponse<List<User>>(success: true, data: users);
       } catch (e) {
         return ApiResponse<List<User>>(
           success: false,
-          message: "Failed to parse user data",
+          message: "Failed to parse follow back data",
         );
       }
     }
@@ -189,12 +225,12 @@ class UserRepository {
     if (response.success && response.data != null) {
       try {
         final List<dynamic> usersJson = response.data;
-        final users = usersJson.map((json) => User.fromJson(json)).toList();
+        final users = usersJson.map((item) => User.fromJson(item)).toList();
         return ApiResponse<List<User>>(success: true, data: users);
       } catch (e) {
         return ApiResponse<List<User>>(
           success: false,
-          message: "Failed to parse user data",
+          message: "Failed to parse explore data",
         );
       }
     }

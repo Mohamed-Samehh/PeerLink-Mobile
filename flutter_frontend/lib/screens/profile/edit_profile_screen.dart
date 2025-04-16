@@ -27,6 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedGender;
   File? _profileImage;
   String? _currentProfileUrl;
+  bool _removeProfilePicture = false;
 
   final List<String> _genders = ['Male', 'Female'];
   bool _isInitialized = false;
@@ -72,6 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (image != null) {
       setState(() {
         _profileImage = image;
+        _removeProfilePicture = false;
       });
     }
   }
@@ -99,6 +101,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _pickImage(ImageSource.gallery);
                   },
                 ),
+                if (_currentProfileUrl != null || _profileImage != null)
+                  ListTile(
+                    leading: const Icon(Icons.delete, color: Colors.red),
+                    title: const Text(
+                      'Remove profile picture',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      setState(() {
+                        _profileImage = null;
+                        _removeProfilePicture = true;
+                      });
+                    },
+                  ),
               ],
             ),
           ),
@@ -159,6 +176,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ? _bioController.text.trim()
                 : null,
         profilePicture: _profileImage,
+        removeProfilePicture: _removeProfilePicture,
       );
 
       if (success && mounted) {
@@ -234,14 +252,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               radius: 60,
                               backgroundColor: AppColors.primaryLight,
                               backgroundImage:
-                                  _profileImage != null
-                                      ? FileImage(_profileImage!)
-                                      : (_currentProfileUrl != null
-                                          ? NetworkImage(_currentProfileUrl!)
-                                          : null),
+                                  _removeProfilePicture
+                                      ? null
+                                      : (_profileImage != null
+                                          ? FileImage(_profileImage!)
+                                          : (_currentProfileUrl != null
+                                              ? NetworkImage(
+                                                _currentProfileUrl!,
+                                              )
+                                              : null)),
                               child:
-                                  _profileImage == null &&
-                                          _currentProfileUrl == null
+                                  (_removeProfilePicture ||
+                                          (_profileImage == null &&
+                                              _currentProfileUrl == null))
                                       ? const Icon(
                                         Icons.person,
                                         size: 60,
@@ -268,7 +291,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          _removeProfilePicture
+                              ? "Profile picture will be removed"
+                              : "Profile Picture",
+                          style: TextStyle(
+                            color:
+                                _removeProfilePicture
+                                    ? Colors.red
+                                    : AppColors.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
                       // Name field
                       TextFormField(

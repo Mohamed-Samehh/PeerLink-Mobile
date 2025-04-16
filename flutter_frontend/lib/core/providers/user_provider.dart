@@ -64,6 +64,7 @@ class UserProvider with ChangeNotifier {
     String? gender,
     String? bio,
     File? profilePicture,
+    bool removeProfilePicture = false,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -79,6 +80,7 @@ class UserProvider with ChangeNotifier {
       gender: gender,
       bio: bio,
       profilePicture: profilePicture,
+      removeProfilePicture: removeProfilePicture,
     );
 
     if (response.success) {
@@ -224,10 +226,8 @@ class UserProvider with ChangeNotifier {
     final response = await _userRepository.toggleFollow(userId);
 
     if (response.success) {
-      final bool isFollowed = response.data!['status'] == 'followed';
-
       // Update users in all lists
-      _updateUserFollowStatus(userId, isFollowed);
+      _updateUserFollowStatus(userId, response.data!['status'] == 'followed');
 
       notifyListeners();
       return true;
@@ -253,6 +253,9 @@ class UserProvider with ChangeNotifier {
           bio: _searchResults[i].bio,
           profilePictureUrl: _searchResults[i].profilePictureUrl,
           isFollowed: isFollowed,
+          postsCount: _searchResults[i].postsCount,
+          followersCount: _searchResults[i].followersCount,
+          followingCount: _searchResults[i].followingCount,
         );
       }
     }
@@ -271,6 +274,9 @@ class UserProvider with ChangeNotifier {
           bio: _followers[i].bio,
           profilePictureUrl: _followers[i].profilePictureUrl,
           isFollowed: isFollowed,
+          postsCount: _followers[i].postsCount,
+          followersCount: _followers[i].followersCount,
+          followingCount: _followers[i].followingCount,
         );
       }
     }
@@ -292,6 +298,9 @@ class UserProvider with ChangeNotifier {
               bio: _followBack[i].bio,
               profilePictureUrl: _followBack[i].profilePictureUrl,
               isFollowed: isFollowed,
+              postsCount: _followBack[i].postsCount,
+              followersCount: _followBack[i].followersCount,
+              followingCount: _followBack[i].followingCount,
             ),
           );
         }
@@ -319,6 +328,9 @@ class UserProvider with ChangeNotifier {
               bio: _explore[i].bio,
               profilePictureUrl: _explore[i].profilePictureUrl,
               isFollowed: isFollowed,
+              postsCount: _explore[i].postsCount,
+              followersCount: _explore[i].followersCount,
+              followingCount: _explore[i].followingCount,
             ),
           );
         }
@@ -352,6 +364,9 @@ class UserProvider with ChangeNotifier {
               bio: user.bio,
               profilePictureUrl: user.profilePictureUrl,
               isFollowed: true,
+              postsCount: user.postsCount,
+              followersCount: user.followersCount,
+              followingCount: user.followingCount,
             );
             break;
           }
