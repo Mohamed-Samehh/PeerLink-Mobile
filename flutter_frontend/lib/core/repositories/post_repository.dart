@@ -21,6 +21,39 @@ class PostRepository {
     );
   }
 
+  Future<ApiResponse<List<Post>>> getUserPosts() async {
+    final response = await _apiClient.get(Endpoints.userPosts);
+
+    if (response.success && response.data != null) {
+      try {
+        // Handle both array response and response with data property
+        final List<dynamic> postsJson;
+        if (response.data is List) {
+          postsJson = response.data;
+        } else if (response.data is Map && response.data.containsKey('data')) {
+          postsJson = response.data['data'];
+        } else {
+          postsJson = [];
+        }
+
+        final posts = postsJson.map((json) => Post.fromJson(json)).toList();
+        return ApiResponse<List<Post>>(success: true, data: posts);
+      } catch (e) {
+        return ApiResponse<List<Post>>(
+          success: false,
+          message: "Failed to parse post data",
+        );
+      }
+    }
+
+    return ApiResponse<List<Post>>(
+      success: response.success,
+      message: response.message,
+      errors: response.errors,
+      data: [],
+    );
+  }
+
   Future<ApiResponse<Post>> createPost({
     required String content,
     File? image,
@@ -53,9 +86,7 @@ class PostRepository {
       Endpoints.likes + postId.toString(),
       fromJson:
           (json) =>
-              (json['data'] as List? ?? [])
-                  .map((item) => Like.fromJson(item))
-                  .toList(),
+              (json as List? ?? []).map((item) => Like.fromJson(item)).toList(),
     );
   }
 }

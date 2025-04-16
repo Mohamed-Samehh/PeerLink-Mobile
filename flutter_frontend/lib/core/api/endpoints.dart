@@ -13,6 +13,7 @@ class Endpoints {
   // Posts
   static const String posts = '/posts';
   static const String post = '/posts/';
+  static const String userPosts = '/user-posts';
 
   // Follow
   static const String follow = '/follow/';

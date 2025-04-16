@@ -35,6 +35,30 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    public function userPosts(Request $request)
+    {
+        if (!$request->user()) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        $posts = Post::where('user_id', $request->user()->id)
+            ->with(['user', 'likes'])
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($post) use ($request) {
+                $post->image_url = $post->image ? Storage::url($post->image) : null;
+                $post->user_liked = $post->likes->contains('user_id', $request->user()->id);
+                
+                if ($post->user && $post->user->profile_picture) {
+                    $post->user->profile_picture_url = Storage::url($post->user->profile_picture);
+                }
+                
+                return $post;
+            });
+
+        return response()->json($posts);
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -58,6 +82,10 @@ class PostController extends Controller
         $post = Post::create($data);
         $post->load('user', 'likes');
         $post->image_url = $post->image ? Storage::url($post->image) : null;
+        
+        if ($post->user && $post->user->profile_picture) {
+            $post->user->profile_picture_url = Storage::url($post->user->profile_picture);
+        }
 
         return response()->json($post, 201);
     }

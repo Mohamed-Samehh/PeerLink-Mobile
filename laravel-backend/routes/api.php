@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [UserController::class, 'update']);
     Route::put('/password', [UserController::class, 'updatePassword']);
     Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/user-posts', [PostController::class, 'userPosts']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::delete('/posts/{post}', [PostController::class, 'destroy']);
     Route::post('/follow/{user}', [FollowController::class, 'toggle']);
