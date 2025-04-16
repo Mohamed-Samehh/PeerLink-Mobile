@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           elevation: 0,
           centerTitle: true,
           iconTheme: IconThemeData(color: AppColors.primary),

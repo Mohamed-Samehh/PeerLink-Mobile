@@ -81,13 +81,14 @@ class _SearchScreenState extends State<SearchScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Discover People'),
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.primary,
+        elevation: 0,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+          indicatorColor: AppColors.primary,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.primary.withValues(alpha: 0.7),
           tabs: const [
             Tab(text: 'Following'),
             Tab(text: 'Followers'),
