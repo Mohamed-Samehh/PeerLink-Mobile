@@ -4,6 +4,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 import '../repositories/auth_repository.dart';
 
+// Result class to handle registration result
+class RegistrationResult {
+  final bool success;
+  final String? message;
+  final User? user;
+
+  RegistrationResult({required this.success, this.message, this.user});
+}
+
 enum AuthStatus { initial, authenticated, unauthenticated }
 
 class AuthProvider with ChangeNotifier {
@@ -53,7 +62,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register({
+  Future<RegistrationResult> register({
     required String name,
     required String username,
     required String email,
@@ -81,18 +90,34 @@ class AuthProvider with ChangeNotifier {
       profilePicture: profilePicture,
     );
 
+    _isLoading = false;
+
     if (response.success) {
-      _user = User.fromJson(response.data!['user']);
-      await _authRepository.saveToken(response.data!['token']);
-      _status = AuthStatus.authenticated;
+      User? registeredUser;
+      String? message;
+
+      if (response.data != null) {
+        if (response.data!.containsKey('user')) {
+          registeredUser = User.fromJson(response.data!['user']);
+        }
+        if (response.data!.containsKey('message')) {
+          message = response.data!['message'];
+        }
+      }
+
+      notifyListeners();
+      return RegistrationResult(
+        success: true,
+        message:
+            message ?? 'Registration successful. Please login to continue.',
+        user: registeredUser,
+      );
     } else {
       _errorMessage = response.message;
       _validationErrors = response.errors;
-      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return RegistrationResult(success: false);
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> login({

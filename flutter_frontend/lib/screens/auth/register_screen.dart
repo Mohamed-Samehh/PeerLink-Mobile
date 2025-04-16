@@ -7,7 +7,6 @@ import '../../core/providers/auth_provider.dart';
 import '../../core/utils/form_validators.dart';
 import '../../core/utils/image_helper.dart';
 import '../../core/constants/app_colors.dart';
-import '../home/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -127,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       final authProvider = context.read<AuthProvider>();
 
-      await authProvider.register(
+      final registrationResult = await authProvider.register(
         name: _nameController.text.trim(),
         username: _usernameController.text.trim(),
         email: _emailController.text.trim(),
@@ -145,26 +144,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
         profilePicture: _profileImage,
       );
 
-      // Check if registration was successful
-      if (authProvider.status == AuthStatus.authenticated) {
-        if (!mounted) return;
+      if (!mounted) return;
 
+      if (registrationResult.success) {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Registration successful!'),
+          SnackBar(
+            content: Text(
+              registrationResult.message ??
+                  'Registration successful. Please login to continue.',
+            ),
             backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 3),
           ),
         );
 
-        // Navigate to home screen and remove all previous routes
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (route) => false,
-        );
-      } else if (authProvider.errorMessage != null) {
-        if (!mounted) return;
-
+        // Navigate back to login screen
+        Navigator.pop(context);
+      } else {
         // Show validation errors if any
         if (authProvider.validationErrors != null) {
           String errorMessage = '';
@@ -185,7 +182,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               duration: const Duration(seconds: 5),
             ),
           );
-        } else {
+        } else if (authProvider.errorMessage != null) {
           // Show general error message
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

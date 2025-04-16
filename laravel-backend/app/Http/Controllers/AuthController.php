@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -46,13 +47,14 @@ class AuthController extends Controller
 
         $user = User::create($userData);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         if ($user->profile_picture) {
-            $user->profile_picture_url = url('storage/' . $user->profile_picture);
+            $user->profile_picture_url = Storage::url($user->profile_picture);
         }
 
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        return response()->json([
+            'message' => 'Registration successful. Please login to continue.',
+            'user' => $user
+        ], 201);
     }
 
     public function login(Request $request)
@@ -75,7 +77,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
 
         if ($user->profile_picture) {
-            $user->profile_picture_url = url('storage/' . $user->profile_picture);
+            $user->profile_picture_url = Storage::url($user->profile_picture);
         }
 
         return response()->json(['user' => $user, 'token' => $token]);
