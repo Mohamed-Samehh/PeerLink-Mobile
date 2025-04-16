@@ -294,14 +294,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 8),
                       Center(
                         child: Text(
-                          _removeProfilePicture
-                              ? "Profile picture will be removed"
-                              : "Profile Picture",
+                          "Profile Picture",
                           style: TextStyle(
-                            color:
-                                _removeProfilePicture
-                                    ? Colors.red
-                                    : AppColors.textSecondary,
+                            color: AppColors.textSecondary,
                             fontSize: 14,
                           ),
                         ),
