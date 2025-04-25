@@ -34,12 +34,16 @@ class User {
 
     if (profilePictureUrl == null && json['profile_picture'] != null) {
       profilePictureUrl =
-          'http://127.0.0.1:8000/storage/${json['profile_picture']}';
+          'http://localhost:8000/storage/${json['profile_picture']}';
+      // 'http://10.0.2.2:8000/storage/ Android emulator and make sure to run "php artisan serve --host=0.0.0.0 --port=8000"
+      // 'http://localhost:8000/storage/' Web or other platforms
     }
 
     if (profilePictureUrl != null && !profilePictureUrl.startsWith('http')) {
       profilePictureUrl =
-          'http://127.0.0.1:8000${profilePictureUrl.startsWith('/') ? '' : '/'}$profilePictureUrl';
+          'http://localhost:8000${profilePictureUrl.startsWith('/') ? '' : '/'}$profilePictureUrl';
+      // 'http://10.0.2.2:8000' Android emulator and make sure to run "php artisan serve --host=0.0.0.0 --port=8000"
+      // 'http://localhost:8000' Web or other platforms
     }
 
     return User(

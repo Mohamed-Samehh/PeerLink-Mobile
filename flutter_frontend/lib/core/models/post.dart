@@ -26,7 +26,9 @@ class Post {
 
     if (imageUrl != null && !imageUrl.startsWith('http')) {
       imageUrl =
-          'http://127.0.0.1:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
+          'http://localhost:8000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
+      // 'http://10.0.2.2:8000' Android emulator and make sure to run "php artisan serve --host=0.0.0.0 --port=8000"
+      // 'http://localhost:8000' Web or other platforms
     }
 
     User? postUser;
@@ -36,7 +38,9 @@ class Post {
       if (userJson['profile_picture_url'] == null &&
           userJson['profile_picture'] != null) {
         userJson['profile_picture_url'] =
-            'http://127.0.0.1:8000/storage/${userJson['profile_picture']}';
+            'http://localhost:8000/storage/${userJson['profile_picture']}';
+        // 'http://10.0.2.2:8000/storage/' Android emulator and make sure to run "php artisan serve --host=0.0.0.0 --port=8000"
+        // 'http://localhost:8000/storage/' Web or other platforms
       }
 
       postUser = User.fromJson(userJson);

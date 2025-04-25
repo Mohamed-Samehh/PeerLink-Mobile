@@ -1,6 +1,5 @@
 class Endpoints {
   static const String baseUrl = 'http://localhost:8000/api';
-
   // 'http://10.0.2.2:8000/api' Android emulator and make sure to run "php artisan serve --host=0.0.0.0 --port=8000"
   // 'http://localhost:8000/api' Web or other platforms
 
